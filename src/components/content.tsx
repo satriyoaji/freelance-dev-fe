@@ -31,13 +31,16 @@ const MyComponent: React.FC<MyComponentProps> = ({ title }) => {
     }
   }
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value, type } = e.target;
 
     // If the input type is a checkbox, handle the checked state
-    const newValue = type === 'checkbox' ? checked : value;
-
-    setFormData({ ...formData, [name]: newValue });
+    if (type === 'checkbox') {
+      const isChecked = (e.target as HTMLInputElement).checked;
+      setFormData({ ...formData, [name]: isChecked });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   return (
