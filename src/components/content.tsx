@@ -14,8 +14,7 @@ const MyComponent: React.FC<MyComponentProps> = ({ title }) => {
     isAdmin: false,
     confirmPassword: ''
   });
-  const [data, setData] = useState<any>({})
-  const [errors, setErrors] = useState([])
+  const [errors, setErrors] = useState<any[]>([]);
 
   const onSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault()
@@ -25,9 +24,12 @@ const MyComponent: React.FC<MyComponentProps> = ({ title }) => {
 
       // Handle successful response
       console.log('Response from API:', response.data);
-    } catch (error) {
+    } catch (error: any) {
       // Handle error
-      console.error('Error:', error);
+      console.error('Error:', error.response?.data);
+      if (error.response && error.response.data && error.response.data.errors) {
+        setErrors(error.response.data.errors);
+      }
     }
   }
 
@@ -48,7 +50,17 @@ const MyComponent: React.FC<MyComponentProps> = ({ title }) => {
       <h1 className="text-center text-3xl font-bold text-white">
         {title}
       </h1>
-
+      {/* Display errors above the form */}
+      {errors.length > 0 && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative my-4 text-xl">
+          <strong className="font-bold">Oops!</strong>
+          <ul>
+            {errors.map((error, index) => (
+              <li key={index}>{error.message}</li>
+            ))}
+          </ul>
+        </div>
+      )}
       <form
         onSubmit={onSubmit}
         className="mt-10 max-w-sm mx-auto flex flex-col gap-2"
